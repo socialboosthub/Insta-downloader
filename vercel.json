@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/(mp3|download|image)(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/((?!api|mp3|download|image).*)",
+      "destination": "/$1"
+    }
+  ]
+}
