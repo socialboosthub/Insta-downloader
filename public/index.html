@@ -639,281 +639,145 @@
   <br>
   <br>
   <script>
-  atOptions = {
-    'key' : '42b77bf41b07cd4fc0eeeefbba516204',
-    'format' : 'iframe',
-    'height' : 300,
-    'width' : 350,
-    'params' : {}
+  const tabConfigs = [{
+      title: "Download TikTok Videos",
+      desc: "Paste a TikTok link to start downloading."
+    },
+    {
+      title: "TikTok MP3 Downloader",
+      desc: "Download audio for your tiktok video."
+    },
+    {
+      title: "Free TikTok Story Saver",
+      desc: "Save TikTok stories before they disappear."
+    },
+    {
+      title: "TikTok Slider Downloader",
+      desc: "Convert photo sliders into video format."
+    },
+    {
+      title: "TikTok Multi Downloader",
+      desc: "Paste multiple links (one per line) to batch process."
+    }
+  ];
+
+  let activeTab = 0;
+
+  // ✅ ONLY INSTAGRAM LINKS ALLOWED
+  const isInstagramLink = (url) => /instagram\.com/.test(url);
+
+  function react(el) {
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.classList.remove('pop');
+    });
+    el.classList.add('pop');
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    document.getElementById('theme-icon').textContent = isLight ? "☀️" : "🌙";
+  }
+
+  function toggleMenu() {
+    document.getElementById('side-menu').classList.toggle('open');
+  }
+
+  function switchTab(idx) {
+    activeTab = idx;
+    document.querySelectorAll('.filter-button').forEach((b, i) =>
+      b.classList.toggle('selected', i === idx)
+    );
+    document.querySelectorAll('.process-btn').forEach((p, i) =>
+      p.classList.toggle('active', i === idx)
+    );
+
+    document.getElementById('page-title').textContent = tabConfigs[idx].title;
+    document.getElementById('page-desc').textContent = tabConfigs[idx].desc;
+
+    const isMulti = idx === 4;
+    document.getElementById('main-input').style.display = isMulti ? 'none' : 'block';
+    document.getElementById('multi-input').style.display = isMulti ? 'block' : 'none';
+
+    handleClear();
+  }
+
+  function triggerError() {
+    const container = document.getElementById('input-container');
+    const toast = document.getElementById('error-toast');
+    container.classList.add('error-shake');
+    toast.classList.add('show');
+    setTimeout(() => container.classList.remove('error-shake'), 500);
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  async function handlePaste() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!isInstagramLink(text)) {
+        triggerError();
+        return;
+      }
+      const input = activeTab === 4
+        ? document.getElementById('multi-input')
+        : document.getElementById('main-input');
+
+      input.value = text;
+      validateInput();
+    } catch (err) {
+      console.log("Clipboard error");
+    }
+  }
+
+  function validateInput() {
+    const input = activeTab === 4
+      ? document.getElementById('multi-input')
+      : document.getElementById('main-input');
+
+    const val = input.value.trim();
+    document.getElementById('paste-btn').style.display = val ? 'none' : 'block';
+    document.getElementById('clear-btn').style.display = val ? 'block' : 'none';
+  }
+
+  function handleClear() {
+    document.getElementById('main-input').value = "";
+    document.getElementById('multi-input').value = "";
+    validateInput();
+  }
+
+  function go(targetFile) {
+    const input = activeTab === 4
+      ? document.getElementById('multi-input')
+      : document.getElementById('main-input');
+
+    const val = input.value.trim();
+
+    if (!val || !isInstagramLink(val)) {
+      triggerError();
+      return;
+    }
+
+    window.location.href = targetFile + "?links=" + encodeURIComponent(val);
+  }
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  window.onscroll = () => {
+    document.getElementById('scrollTop').style.display =
+      window.pageYOffset > 400 ? 'flex' : 'none';
   };
-</script>
-<script src="https://www.highperformanceformat.com/42b77bf41b07cd4fc0eeeefbba516204/invoke.js"></script>
-  <section id="features">
-  <div class="section-wrap">
-    <h2 style="text-align:center; color:var(--pink);">Premium Features</h2>
-    <div class="grid-3">
-      <div class="feature-card" onclick="react(this)">
-        <h3>🚀 Multi-Download</h3>
-        <p>Process dozens of links simultaneously with our batch engine, perfect for large archival tasks.</p>
-      </div>
-      <div class="feature-card" onclick="react(this)">
-        <h3>💎 No Watermark</h3>
-        <p>Get original source files without any distracting TikTok logos or user IDs for a clean look.</p>
-      </div>
-      <div class="feature-card" onclick="react(this)">
-        <h3>⚡ Speed King</h3>
-        <p>Our servers provide direct links to the source, ensuring you get the highest download speed available.</p>
-      </div>
-    </div>
-  </div>
-  </section>
-  <section class="supported">
-    <h2 style="text-align:center; color:var(--cyan">Supported Content</h2>
-    <p class="section-desc" style="text-align: center;">Download multiple types of TikTok content with high quality and no watermark.</p>
-    <div class="content-grid">
-      <div class="content-card">
-        <span>🎬</span>
-        <h3>Videos</h3>
-        <p>Download public TikTok videos in HD without watermark.</p>
-      </div>
-      <div class="content-card">
-        <span>🖼️</span>
-        <h3>Photo Sliders</h3>
-        <p>Save TikTok photo posts and albums in original quality.</p>
-      </div>
-      <div class="content-card">
-        <span>📖</span>
-        <h3>Stories</h3>
-        <p>Download TikTok stories from public accounts.</p>
-      </div>
-      <div class="content-card">
-        <span>🎵</span>
-        <h3>Audio</h3>
-        <p>Extract and download TikTok audio as MP3.</p>
-      </div>
-    </div>
-  </section>
-  <section id="download">
-  <div class="section-wrap">
-    <h2 style="text-align:center; color:var(--pink);">How To Download</h2>
-    <div class="grid-3">
-      <div class="step-card"><img src="https://cdn-icons-png.flaticon.com/512/1621/1621635.png" class="step-img">
-        <h3>1. Copy URL</h3>
-        <p>Open TikTok and tap Share -> Copy Link to save the URL to your device clipboard.</p>
-      </div>
-      <div class="step-card"><img src="https://cdn-icons-png.flaticon.com/512/7066/7066014.png" class="step-img">
-        <h3>2. Paste Here</h3>
-        <p>Return here and click Paste. Our engine will find the highest resolution available instantly.</p>
-      </div>
-      <div class="step-card"><img src="https://cdn-icons-png.flaticon.com/512/2989/2989838.png" class="step-img">
-        <h3>3. Save File</h3>
-        <p>Click process and download the Ultra HD file directly to your device storage without logos.</p>
-      </div>
-    </div>
-  </div>
-  </section>
-  <div class="section-wrap">
-    <h2 style="text-align:center; color:var(--cyan);">Device Compatible</h2>
-    <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-      <div class="guide-card">
-        <h3>📱 Mobile Guide</h3>
-        <p>On Android, use Chrome for direct downloads. On iPhone, long-press the 'Download' button and choose 'Download Linked File'.</p>
-      </div>
-      <div class="guide-card">
-        <h3>💻 PC & Desktop</h3>
-        <p>Copy the link from the browser bar and paste here. Files save instantly to your default Downloads folder in original MP4 quality.</p>
-      </div>
-    </div>
-  </div>
-  <section id="faq">
-  <div class="section-wrap">
-    <h2 style="text-align:center; color:var(--pink);">Frequently Asked Questions</h2>
-    <div class="faq-wrap">
-      <div class="faq-item" onclick="this.classList.toggle('active')"><button class="faq-btn">1. Is this service free? <span>+</span></button>
-        <div class="faq-content">Yes, TikSave Pro is a 100% free web utility with no hidden costs.</div>
-      </div>
-      <div class="faq-item" onclick="this.classList.toggle('active')"><button class="faq-btn">2. Can I download 4K? <span>+</span></button>
-        <div class="faq-content">We always fetch the highest quality available, including 1080p and 4K source files.</div>
-      </div>
-      <div class="faq-item" onclick="this.classList.toggle('active')"><button class="faq-btn">3. Any download limits? <span>+</span></button>
-        <div class="faq-content">Zero limits. You can download unlimited content 24 hours a day, 365 days a year.</div>
-      </div>
-      <div class="faq-item" onclick="this.classList.toggle('active')"><button class="faq-btn">4. Phone issues? <span>+</span></button>
-        <div class="faq-content">Use the "Download Linked File" option on long-press to bypass Apple's download restrictions.</div>
-      </div>
-      <div class="faq-item" onclick="this.classList.toggle('active')"><button class="faq-btn">5. Works with private accounts? <span>+</span></button>
-        <div class="faq-content">No, we only access public profiles to respect user privacy and TikTok security.</div>
-      </div>
-      <div class="faq-item" onclick="this.classList.toggle('active')"><button class="faq-btn">6. Truly, no watermark? <span>+</span></button>
-        <div class="faq-content">Yes, we provide the raw MP4 file directly from the servers, meaning no logos or user IDs.</div>
-      </div>
-      <div class="faq-item" onclick="this.classList.toggle('active')"><button class="faq-btn">7. Is it safe to use? <span>+</span></button>
-        <div class="faq-content">Absolutely. We use SSL encryption and never store your data or the videos you process.</div>
-      </div>
-    </div>
-  </div>
-  </section>
-  <section class="disclaimer">
-    <h2 style="text-align:center; color:var(--pink">Disclaimer</h2>
-    <p>
-      This website does not host any TikTok videos on its servers. All content is delivered directly from TikTok servers.
-      The ownership and copyright of the content belong to the original creators.
-    </p>
-    <p>
-      Users are responsible for how they use downloaded content. This service is intended for personal and educational use only.
-    </p>
-  </section>
-  <footer class="footer">
-    <div class="footer-grid">
-      <div>
-        <h3>TikTop</h3>
-        <p>Fast and simple TikTok downloader</p>
-        <p>with no watermark.</p>
-      </div>
-      <div>
-        <h4>Tools</h4>
-        <a href="./instagram.html">Instagram Downloader</a>
-        <a href="./youtube.html">Youtube Downloader</a>
-        <a href="./facebook.html">Facebook Downloader</a>
-        <a href="./twitter.html">Twitter Downloader</a>
-      </div>
-      <div>
-        <h4>Legal</h4>
-        <a href="./privacy.html">Privacy Policy</a>
-        <a href="./terms.html">Terms of Service</a>
-        <a href="./dmca.html">DMCA</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      © 2025 TikTop. All rights reserved.
-    </div>
-  </footer>
-  <div>
-    <div id="scrollTop" onclick="scrollToTop()">🚀</div>
-    <script>
-      const tabConfigs = [{
-          title: "Download TikTok Videos",
-          desc: "Paste a TikTok link to start downloading."
-        },
-        {
-          title: "TikTok MP3 Downloader",
-          desc: "Download audio for your tiktok video."
-        },
-        {
-          title: "Free TikTok Story Saver",
-          desc: "Save TikTok stories before they disappear."
-        },
-        {
-          title: "TikTok Slider Downloader",
-          desc: "Convert photo sliders into video format."
-        },
-        {
-          title: "TikTok Multi Downloader",
-          desc: "Paste multiple links (one per line) to batch process."
-        }
-      ];
-      let activeTab = 0;
-      const isTikTokLink = (url) => /tiktok\.com/.test(url);
 
-      function react(el) {
-        document.querySelectorAll('.feature-card').forEach(card => {
-          card.classList.remove('pop');
-        });
-        el.classList.add('pop');
-      }
-
-      // === UPDATED THEME LOGIC ===
-      function toggleTheme() {
-        document.body.classList.toggle('light-mode');
-        const isLight = document.body.classList.contains('light-mode');
-        // Save to LocalStorage
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        document.getElementById('theme-icon').textContent = isLight ? "☀️" : "🌙";
-      }
-
-      function toggleMenu() {
-        document.getElementById('side-menu').classList.toggle('open');
-      }
-
-      function switchTab(idx) {
-        activeTab = idx;
-        document.querySelectorAll('.filter-button').forEach((b, i) => b.classList.toggle('selected', i === idx));
-        document.querySelectorAll('.process-btn').forEach((p, i) => p.classList.toggle('active', i === idx));
-        document.getElementById('page-title').textContent = tabConfigs[idx].title;
-        document.getElementById('page-desc').textContent = tabConfigs[idx].desc;
-        const isMulti = idx === 4;
-        document.getElementById('main-input').style.display = isMulti ? 'none' : 'block';
-        document.getElementById('multi-input').style.display = isMulti ? 'block' : 'none';
-        handleClear();
-      }
-
-      function triggerError() {
-        const container = document.getElementById('input-container');
-        const toast = document.getElementById('error-toast');
-        container.classList.add('error-shake');
-        toast.classList.add('show');
-        setTimeout(() => container.classList.remove('error-shake'), 500);
-        setTimeout(() => toast.classList.remove('show'), 3000);
-      }
-
-      async function handlePaste() {
-        try {
-          const text = await navigator.clipboard.readText();
-          if (!isTikTokLink(text)) {
-            triggerError();
-            return;
-          }
-          const input = activeTab === 4 ? document.getElementById('multi-input') : document.getElementById('main-input');
-          input.value = text;
-          validateInput();
-        } catch (err) {
-          console.log("Clipboard error");
-        }
-      }
-
-      function validateInput() {
-        const input = activeTab === 4 ? document.getElementById('multi-input') : document.getElementById('main-input');
-        const val = input.value.trim();
-        document.getElementById('paste-btn').style.display = val ? 'none' : 'block';
-        document.getElementById('clear-btn').style.display = val ? 'block' : 'none';
-      }
-
-      function handleClear() {
-        document.getElementById('main-input').value = "";
-        document.getElementById('multi-input').value = "";
-        validateInput();
-      }
-
-      function go(targetFile) {
-        const input = activeTab === 4 ? document.getElementById('multi-input') : document.getElementById('main-input');
-        const val = input.value.trim();
-        if (!val || !isTikTokLink(val)) {
-          triggerError();
-          return;
-        }
-        window.location.href = targetFile + "?links=" + encodeURIComponent(val);
-      }
-
-      function scrollToTop() {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      }
-
-      window.onscroll = () => {
-        document.getElementById('scrollTop').style.display = window.pageYOffset > 400 ? 'flex' : 'none';
-      }
-
-      // === INIT THEME ON LOAD ===
-      (function() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-          document.body.classList.add('light-mode');
-          const icon = document.getElementById('theme-icon');
-          if(icon) icon.textContent = "☀️";
-        }
-      })();
-    </script>
+  // INIT THEME
+  (function () {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-mode');
+      document.getElementById('theme-icon').textContent = "☀️";
+    }
+  })();
+  </script>
 </body>
 </html>
