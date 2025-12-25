@@ -3,67 +3,111 @@ const fetch = require("node-fetch");
 
 const app = express();
 
-// API: Fetch TikTok data
+/*
+|--------------------------------------------------------------------------
+| API: Fetch Instagram data
+|--------------------------------------------------------------------------
+| Works for:
+| - Reels
+| - Posts
+| - Videos
+*/
 app.get("/api", async (req, res) => {
   try {
     const url = req.query.url;
-    if (!url) return res.status(400).json({ error: "No URL provided" });
+    if (!url) {
+      return res.status(400).json({ error: "No URL provided" });
+    }
 
-    const apiUrl = `https://tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`;
+    // Instagram scraper API
+    const apiUrl = `https://igram.world/api/ig/media?url=${encodeURIComponent(url)}`;
 
     const response = await fetch(apiUrl, {
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X)"
+          "Mozilla/5.0 (Linux; Android 13; Mobile Safari)",
+        "Accept": "application/json"
       }
     });
 
     const json = await response.json();
+
+    if (!json || json.error) {
+      return res.status(500).json({ error: "Failed to fetch Instagram data" });
+    }
+
     res.json(json);
-  } catch {
-    res.status(500).json({ error: "API failed" });
+  } catch (error) {
+    res.status(500).json({ error: "Instagram API failed" });
   }
 });
 
-// MP3
+/*
+|--------------------------------------------------------------------------
+| MP3 (Audio)
+|--------------------------------------------------------------------------
+*/
 app.get("/mp3", async (req, res) => {
   try {
-    const response = await fetch(req.query.url);
+    const url = req.query.url;
+    if (!url) return res.status(400).send("No audio URL");
+
+    const response = await fetch(url);
+
     res.setHeader("Content-Type", "audio/mpeg");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${req.query.name || "audio"}.mp3"`
+      `attachment; filename="${req.query.name || "instagram-audio"}.mp3"`
     );
+
     response.body.pipe(res);
   } catch {
     res.status(500).send("Audio download failed");
   }
 });
 
-// VIDEO
+/*
+|--------------------------------------------------------------------------
+| VIDEO
+|--------------------------------------------------------------------------
+*/
 app.get("/download", async (req, res) => {
   try {
-    const response = await fetch(req.query.url);
+    const url = req.query.url;
+    if (!url) return res.status(400).send("No video URL");
+
+    const response = await fetch(url);
+
     res.setHeader("Content-Type", "video/mp4");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${req.query.name || "video"}.mp4"`
+      `attachment; filename="${req.query.name || "instagram-video"}.mp4"`
     );
+
     response.body.pipe(res);
   } catch {
-    res.status(500).send("Download failed");
+    res.status(500).send("Video download failed");
   }
 });
 
-// IMAGE
+/*
+|--------------------------------------------------------------------------
+| IMAGE
+|--------------------------------------------------------------------------
+*/
 app.get("/image", async (req, res) => {
   try {
-    const response = await fetch(req.query.url);
+    const url = req.query.url;
+    if (!url) return res.status(400).send("No image URL");
+
+    const response = await fetch(url);
+
     res.setHeader("Content-Type", "image/jpeg");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${req.query.name}"`
+      `attachment; filename="${req.query.name || "instagram-image"}.jpg"`
     );
+
     response.body.pipe(res);
   } catch {
     res.status(500).send("Image download failed");
